@@ -48,11 +48,6 @@ export default function App() {
     // Load pop sound
     popAudioRef.current = new Audio('/pop.wav');
     
-    // Load bubble frame
-    const img = new Image();
-    img.src = '/bubble.png';
-    img.onload = () => { bubbleFrameRef.current = img; };
-
     const ctx = canvasRef.current.getContext('2d');
     if (!ctx) return;
 
@@ -195,22 +190,30 @@ export default function App() {
     ctx.shadowBlur = 10;
     ctx.shadowColor = type.color;
     
-    // 绘制 bubble.png 作为背景/框
-    if (bubbleFrameRef.current && bubbleFrameRef.current.complete) {
-      ctx.drawImage(
-        bubbleFrameRef.current, 
-        x - BUBBLE_RADIUS, 
-        y - BUBBLE_RADIUS, 
-        BUBBLE_RADIUS * 2, 
-        BUBBLE_RADIUS * 2
-      );
-    } else {
-      // 备用方案：绘制主体圆形
-      ctx.beginPath();
-      ctx.arc(x, y, BUBBLE_RADIUS, 0, Math.PI * 2);
-      ctx.fillStyle = type.color;
-      ctx.fill();
-    }
+    // 绘制泡泡主体 (程序化绘制)
+    // 1. 绘制底色圆形
+    ctx.beginPath();
+    ctx.arc(x, y, BUBBLE_RADIUS, 0, Math.PI * 2);
+    ctx.fillStyle = type.color;
+    ctx.fill();
+
+    // 2. 绘制玻璃质感渐变
+    const gradient = ctx.createRadialGradient(
+      x - BUBBLE_RADIUS * 0.3, 
+      y - BUBBLE_RADIUS * 0.3, 
+      BUBBLE_RADIUS * 0.1,
+      x, 
+      y, 
+      BUBBLE_RADIUS
+    );
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
+    gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.1)');
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0.2)');
+    
+    ctx.beginPath();
+    ctx.arc(x, y, BUBBLE_RADIUS, 0, Math.PI * 2);
+    ctx.fillStyle = gradient;
+    ctx.fill();
 
     // 绘制从者图片 (在泡泡内部)
     const img = imagesRef.current[type.id];
@@ -234,8 +237,14 @@ export default function App() {
     ctx.beginPath();
     ctx.arc(x, y, BUBBLE_RADIUS, 0, Math.PI * 2);
     ctx.strokeStyle = '#D4AF37';
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 2;
     ctx.stroke();
+
+    // 绘制高光点
+    ctx.beginPath();
+    ctx.arc(x - BUBBLE_RADIUS * 0.4, y - BUBBLE_RADIUS * 0.4, BUBBLE_RADIUS * 0.2, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.fill();
 
     ctx.restore();
   };
@@ -297,7 +306,7 @@ export default function App() {
       {/* 背景装饰 (FGO 风格) */}
       <div className="absolute inset-0 opacity-40 pointer-events-none overflow-hidden">
         <img 
-          src="https://picsum.photos/seed/fgo_bg/1920/1080" 
+          src="/beijing.png" 
           alt="Background" 
           className="w-full h-full object-cover scale-105 blur-[1px]"
           referrerPolicy="no-referrer"
