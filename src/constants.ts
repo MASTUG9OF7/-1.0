@@ -6,9 +6,9 @@ export const CANVAS_HEIGHT = 640;
 
 export const ALL_BUBBLE_TYPES = Array.from({ length: 28 }, (_, i) => ({
   id: `type_${i + 1}`,
-  color: `hsl(${(i * 360) / 28}, 70%, 50%)`, // Generate distinct colors as fallback
+  color: `hsl(${(i * 360) / 28}, 70%, 50%)`, 
   label: `${i + 1}`,
-  icon: `/${i + 1}.png`
+  icon: `${i + 1}.png`  
 }));
 
 export const UI_COLORS = {
