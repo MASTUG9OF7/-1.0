@@ -214,13 +214,20 @@ export default function App() {
 
     // 绘制从者图片 (在泡泡内部)
     const img = imagesRef.current[type.id];
-    if (img && img.complete) {
+    if (img && img.complete && img.naturalWidth !== 0) {
       ctx.save();
       ctx.beginPath();
       ctx.arc(x, y, BUBBLE_RADIUS - 4, 0, Math.PI * 2);
       ctx.clip();
       ctx.drawImage(img, x - BUBBLE_RADIUS + 2, y - BUBBLE_RADIUS + 2, (BUBBLE_RADIUS - 2) * 2, (BUBBLE_RADIUS - 2) * 2);
       ctx.restore();
+    } else {
+      // 如果图片没加载出来，显示文字标签
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 14px font-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(type.label, x, y);
     }
 
     // 绘制金边 (FGO 风格)
