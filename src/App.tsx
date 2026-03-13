@@ -13,7 +13,7 @@ export default function App() {
   const [currentType, setCurrentType] = useState(0);
   const [activeTypes, setActiveTypes] = useState<typeof ALL_BUBBLE_TYPES>([]);
   const [angle, setAngle] = useState(-Math.PI / 2);
-  const [bgmUrl, setBgmUrl] = useState('/bgm.mp3');
+  const [bgmUrl, setBgmUrl] = useState('bgm.mp3');
   const [isMuted, setIsMuted] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -41,7 +41,9 @@ export default function App() {
 
   useEffect(() => {
     if (!canvasRef.current) return;
-    const engine = new GameEngine(updateState, playPop);
+    const shuffled = [...ALL_BUBBLE_TYPES].sort(() => 0.5 - Math.random());
+    const selectedTypes = shuffled.slice(0, 7);
+    const engine = new GameEngine(updateState, playPop, selectedTypes);
     engineRef.current = engine;
     updateState();
 
@@ -222,7 +224,7 @@ export default function App() {
       ctx.beginPath();
       ctx.arc(x, y, BUBBLE_RADIUS - 4, 0, Math.PI * 2);
       ctx.clip();
-      ctx.drawImage(img, x - BUBBLE_RADIUS + 2, y - BUBBLE_RADIUS + 2, (BUBBLE_RADIUS - 2) * 2, (BUBBLE_RADIUS - 2) * 2);
+      ctx.drawImage(img, x - BUBBLE_RADIUS, y - BUBBLE_RADIUS, BUBBLE_RADIUS * 2, BUBBLE_RADIUS * 2);
       ctx.restore();
     } else {
       // 如果图片没加载出来，显示文字标签
