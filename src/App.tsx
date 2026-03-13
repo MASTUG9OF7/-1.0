@@ -11,9 +11,9 @@ export default function App() {
   const [gameOver, setGameOver] = useState(false);
   const [nextType, setNextType] = useState(0);
   const [currentType, setCurrentType] = useState(0);
-  const [activeTypes, setActiveTypes] = useState(ALL_BUBBLE_TYPES.slice(0, 7));
+  const [activeTypes, setActiveTypes] = useState<typeof ALL_BUBBLE_TYPES>([]);
   const [angle, setAngle] = useState(-Math.PI / 2);
-  const [bgmUrl, setBgmUrl] = useState('bgm.mp3');
+  const [bgmUrl, setBgmUrl] = useState('/bgm.mp3');
   const [isMuted, setIsMuted] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -46,11 +46,11 @@ export default function App() {
     updateState();
 
     // Load pop sound
-    popAudioRef.current = new Audio('pop.wav');
+    popAudioRef.current = new Audio('/pop.wav');
     
     // Load bubble frame
     const img = new Image();
-    img.src = 'bubble.png';
+    img.src = '/bubble.png';
     img.onload = () => { bubbleFrameRef.current = img; };
 
     const ctx = canvasRef.current.getContext('2d');
@@ -283,7 +283,9 @@ export default function App() {
 
   const startGame = () => {
     setGameStarted(true);
-    if (audioRef.current && audioRef.current.src) {
+    if (audioRef.current) {
+      // 解决 Netlify 等环境下的加载问题
+      audioRef.current.load();
       audioRef.current.play().catch(err => {
         console.warn("Audio playback failed, possibly due to browser restrictions or invalid source:", err);
       });
